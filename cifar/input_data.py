@@ -17,11 +17,21 @@ def read_decode(filename):
 	return img, label
 
 def next_batch(size):
-	image, label = read_decode('./records/train_data_batch_2.tfrecords')
+	image, label = read_decode('./records/train_data_batch_1.tfrecords')
 	image_batch, label_batch = tf.train.shuffle_batch(
 		[image, label],
 		batch_size=size,
 		capacity=10000,
 		min_after_dequeue=size
+	)
+	return image_batch, label_batch
+
+def test_batch():
+	image, label = read_decode('./records/train_test_batch.tfrecords')
+	image_batch, label_batch = tf.train.shuffle_batch(
+		[image, label],
+		batch_size=100,
+		capacity=10000,
+		min_after_dequeue=100
 	)
 	return image_batch, label_batch
