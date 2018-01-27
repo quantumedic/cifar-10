@@ -5,7 +5,7 @@ import tensorflow as tf
 from model.optimize import optimize
 from cifar import feed
 import deepnn
-import saver
+import saver_prod
 
 def train():
 	sess = tf.InteractiveSession()
@@ -23,12 +23,11 @@ def train():
 	test_writer = tf.summary.FileWriter('./logs/test')
 	tf.global_variables_initializer().run()
 
-	train_saver = tf.train.Saver()
+	train_saver = tf.saved_model.builder.SavedModelBuilder('./save')
 
 	with tf.name_scope('train'):
 		# try restore saver
-		saver.restore(train_saver, sess)
-
+		# saver.restore(train_saver, sess)
 		for i in range(100):
 			if i % 10 == 0:
 				xs, ys, k = feed.feed_data(False, 1, sess)
