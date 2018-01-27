@@ -5,6 +5,7 @@ import tensorflow as tf
 from model.optimize import optimize
 from cifar import feed
 import deepnn
+import saver_dev
 import saver_prod
 
 def train():
@@ -23,24 +24,27 @@ def train():
 	test_writer = tf.summary.FileWriter('./logs/test')
 	tf.global_variables_initializer().run()
 
-	train_saver = tf.saved_model.builder.SavedModelBuilder('./save')
+	train_saver = tf.train.Saver()
+	model_saver = tf.saved_model.builder.SavedModelBuilder('./dist')
 
 	with tf.name_scope('train'):
 		# try restore saver
-		# saver.restore(train_saver, sess)
-		for i in range(100):
+		saver_dev.restore(train_saver, sess)
+
+		for i in range(1000):
 			if i % 10 == 0:
 				xs, ys, k = feed.feed_data(False, 1, sess)
 				summary, acc = sess.run([merged, accuracy], feed_dict={x: xs, y_: ys, keep_prob: k})
 				test_writer.add_summary(summary, i)
-				saver.save(train_saver, sess)
+				saver_dev.save(train_saver, sess)
 				print('Accuracy at step %s: %s' % (i, acc))
 			else:
-				xs, ys, k = feed.feed_data(False, 0.5, sess)
+				xs, ys, k = feed.feed_data(True, 0.5, sess)
 				summary, _ = sess.run([merged, train_step], feed_dict={x: xs, y_: ys, keep_prob: k})
 				train_writer.add_summary(summary, i)
 
 	xs, ys, k = feed.feed_data(False, 1, sess)
+	saver_prod.save(model_saver, sess)
 	print('test accuracy %g' % accuracy.eval(feed_dict={x: xs, y_: ys, keep_prob: k}))
 
 	train_writer.close()

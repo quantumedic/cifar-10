@@ -8,10 +8,13 @@ def init_feature(type, value):
 	else:
 		return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
-def build(path, filename):
-	writer = tf.python_io.TFRecordWriter('../records/train_' + filename + '.tfrecords')
-	data, labels = unpack.extract(path + filename)
+def build(path, filename, mode):
+	if mode == 'train':
+		writer = tf.python_io.TFRecordWriter('../records/train_data_batch.tfrecords')
+	else:
+		writer = tf.python_io.TFRecordWriter('../records/train_' + filename + '.tfrecords')
 
+	data, labels = unpack.extract(path + filename)
 	for i in range(len(data)):
 		print('extract file index of %u from %s' % (i, filename))
 		img = Image.fromarray(unpack.read(data[i]))
