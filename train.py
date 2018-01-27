@@ -5,6 +5,7 @@ import tensorflow as tf
 from model.optimize import optimize
 from cifar import feed
 import deepnn
+import saver
 
 def train():
 	sess = tf.InteractiveSession()
@@ -22,12 +23,18 @@ def train():
 	test_writer = tf.summary.FileWriter('./logs/test')
 	tf.global_variables_initializer().run()
 
+	train_saver = tf.train.Saver()
+
 	with tf.name_scope('train'):
+		# try restore saver
+		saver.restore(train_saver, sess)
+
 		for i in range(100):
 			if i % 10 == 0:
 				xs, ys, k = feed.feed_data(False, 1, sess)
 				summary, acc = sess.run([merged, accuracy], feed_dict={x: xs, y_: ys, keep_prob: k})
 				test_writer.add_summary(summary, i)
+				saver.save(train_saver, sess)
 				print('Accuracy at step %s: %s' % (i, acc))
 			else:
 				xs, ys, k = feed.feed_data(False, 0.5, sess)
