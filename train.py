@@ -32,7 +32,7 @@ def train():
 		# try restore saver
 		saver_dev.restore(train_saver, sess)
 
-		x_train, y_train, k_train = feed.feed_data(False, 1, sess)
+		x_train, y_train, k_train = feed.feed_data(True, 0.5, sess)
 		x_test, y_test, k_test = feed.feed_data(False, 1, sess)
 
 		for i in range(1000):

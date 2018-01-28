@@ -15,7 +15,7 @@ def build(x):
 		W_conv1 = variable.init_weight([5, 5, 3, 32])
 		b_conv1 = variable.init_bias([32])
 		h_conv1 = tf.nn.relu(layer.init_conv(x_reshaped, W_conv1) + b_conv1)
-		# summary.record_scalar(W_conv1)
+		summary.record_scalar(W_conv1)
 
 
 	# layer.init_pooling
@@ -27,7 +27,7 @@ def build(x):
 		W_conv2 = variable.init_weight([5, 5, 32, 64])
 		b_conv2 = variable.init_bias([64])
 		h_conv2 = tf.nn.relu(layer.init_conv(h_pool1, W_conv2) + b_conv2)
-		# summary.record_scalar(W_conv2)
+		summary.record_scalar(W_conv2)
 
 	# second layer.init_pooling
 	with tf.name_scope('pool2'):
@@ -53,8 +53,8 @@ def build(x):
 		b_output = variable.init_bias([10])
 
 		y = tf.matmul(h_fc1_dropped, W_output) + b_output
-		# tf.summary.histogram('W_output', W_output)
-		# tf.summary.histogram('b_output', b_output)
+		tf.summary.histogram('W_output', W_output)
+		tf.summary.histogram('b_output', b_output)
 		tf.summary.histogram('y_output', y)
 
 	return y, keep_prob
