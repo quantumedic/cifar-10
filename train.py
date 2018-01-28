@@ -26,29 +26,33 @@ def train():
 
 	train_saver = tf.train.Saver()
 	model_saver = tf.saved_model.builder.SavedModelBuilder('./dist')
-
+	model_saver.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
+	
 	with tf.name_scope('train'):
 		# try restore saver
 		saver_dev.restore(train_saver, sess)
 
+		x_train, y_train, k_train = feed.feed_data(False, 1, sess)
+		x_test, y_test, k_test = feed.feed_data(False, 1, sess)
+
 		for i in range(1000):
 			if i % 10 == 0:
-				xs, ys, k = feed.feed_data(False, 1, sess)
-				summary, acc = sess.run([merged, accuracy], feed_dict={x: xs, y_: ys, keep_prob: k})
+				x_batch, y_batch = sess.run([x_test, y_test])
+				summary, acc = sess.run([merged, accuracy], feed_dict={x: x_batch, y_: y_batch, keep_prob: k_test})
 				test_writer.add_summary(summary, i)
 				saver_dev.save(train_saver, sess)
 				print('Accuracy at step %s: %s' % (i, acc))
 			else:
-				xs, ys, k = feed.feed_data(True, 0.5, sess)
-				summary, _ = sess.run([merged, train_step], feed_dict={x: xs, y_: ys, keep_prob: k})
+				x_batch, y_batch = sess.run([x_train, y_train])
+				summary, _ = sess.run([merged, train_step], feed_dict={x: x_batch, y_: y_batch, keep_prob: k_train})
 				train_writer.add_summary(summary, i)
 
-	xs, ys, k = feed.feed_data(False, 1, sess)
-	saver_prod.save(model_saver, sess)
-	print('test accuracy %g' % accuracy.eval(feed_dict={x: xs, y_: ys, keep_prob: k}))
+		x_batch, y_batch = sess.run([x_test, y_test])
+		saver_prod.save(model_saver, sess)
+		print('test accuracy %g' % accuracy.eval(feed_dict={x: x_batch, y_: y_batch, keep_prob: k_test}))
 
-	train_writer.close()
-	test_writer.close()
+		train_writer.close()
+		test_writer.close()
 
 def main(_):
 	train()

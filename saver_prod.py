@@ -6,5 +6,4 @@ def restore(saver, sess):
 		saver.restore(sess, './save/model.ckpt')
 
 def save(saver, sess):
-	saver.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
 	saver.save()

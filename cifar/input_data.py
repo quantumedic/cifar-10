@@ -1,10 +1,12 @@
 import tensorflow as tf
 
-def read_decode(filename):
-	filename_queue = tf.train.string_input_producer([filename])
+reader = tf.TFRecordReader()
+train_queue = tf.train.string_input_producer(['./records/train_data_batch.tfrecords'])
+test_queue = tf.train.string_input_producer(['./records/train_test_batch.tfrecords'])
 
-	reader = tf.TFRecordReader()
-	_, serialized_example = reader.read(filename_queue)
+def read_decode(train_mode):
+	_queue = train_mode and train_queue or test_queue
+	_, serialized_example = reader.read(_queue)
 	features = tf.parse_single_example(serialized_example, features={
 		'label': tf.FixedLenFeature([], tf.int64),
 		'img_raw': tf.FixedLenFeature([], tf.string)
@@ -17,7 +19,7 @@ def read_decode(filename):
 	return img, label
 
 def next_batch(size):
-	image, label = read_decode('./records/train_data_batch.tfrecords')
+	image, label = read_decode(True)
 	image_batch, label_batch = tf.train.shuffle_batch(
 		[image, label],
 		batch_size=size,
@@ -27,7 +29,7 @@ def next_batch(size):
 	return image_batch, label_batch
 
 def test_batch():
-	image, label = read_decode('./records/train_test_batch.tfrecords')
+	image, label = read_decode(False)
 	image_batch, label_batch = tf.train.shuffle_batch(
 		[image, label],
 		batch_size=100,
