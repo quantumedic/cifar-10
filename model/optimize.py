@@ -9,7 +9,7 @@ def optimize(y_, y):
 	summary.record_scalar(cross_entropy)
 
 	with tf.name_scope('optimizer'):
-		train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+		train_step = tf.train.AdamOptimizer(1e-3).minimize(cross_entropy)
 
 	with tf.name_scope('accuracy'):
 		correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))

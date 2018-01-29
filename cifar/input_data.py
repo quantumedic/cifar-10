@@ -32,8 +32,8 @@ def test_batch():
 	image, label = read_decode(False)
 	image_batch, label_batch = tf.train.shuffle_batch(
 		[image, label],
-		batch_size=100,
+		batch_size=10000,
 		capacity=10000,
-		min_after_dequeue=100
+		min_after_dequeue=1000
 	)
 	return image_batch, label_batch
